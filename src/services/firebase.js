@@ -1,15 +1,10 @@
 const admin = require('firebase-admin');
-const fs = require('fs');
-const path = require('path');
 
-// Lee el archivo firebase-key.json
-const keyPath = path.join(__dirname, '../../firebase-key.json');
-
+// Inicializa Firebase usando variables de entorno
 if (!admin.apps.length) {
   try {
-    // Lee el archivo como texto y parsea como JSON
-    const serviceAccountJson = fs.readFileSync(keyPath, 'utf8');
-    const serviceAccount = JSON.parse(serviceAccountJson);
+    // Lee credenciales desde variable de entorno
+    const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS || '{}');
     
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
@@ -18,8 +13,6 @@ if (!admin.apps.length) {
     console.log('✅ Firebase inicializado correctamente\n');
   } catch (error) {
     console.error('❌ Error inicializando Firebase:', error.message);
-    console.error('   Ruta buscada:', keyPath);
-    console.error('   Verifica que firebase-key.json existe en la raíz');
     process.exit(1);
   }
 }
