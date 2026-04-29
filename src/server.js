@@ -132,6 +132,24 @@ app.post('/webhook/whatsapp', async (req, res) => {
             });
             console.log('💾 Factura guardada en Firebase');
 
+            // ===== ENVÍA EMAIL AL CLIENTE =====
+            console.log('📧 Enviando email al cliente...');
+            const emailService = require('./services/email');
+            const resultadoEmail = await emailService.enviarCFDIAlCliente(
+              resultadoCFDI.cfdi,
+              {
+                email: datosGuardados.emailDestino,
+                nombre: datosGuardados.nombre,
+                rfc: datosGuardados.rfc
+              }
+            );
+
+            if (resultadoEmail.success) {
+              console.log('✅ Email enviado correctamente');
+            } else {
+              console.log('⚠️  Error enviando email:', resultadoEmail.error);
+            }
+
             // Envía respuesta al usuario
             const mensajeExito = `🎉 <b>¡CFDI GENERADO EXITOSAMENTE!</b>\n\n` +
               `<b>Folio:</b> ${resultadoCFDI.cfdi.folio}\n` +
